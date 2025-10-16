@@ -1,0 +1,46 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# This workflow requires that you have an existing account with codescan.io
+# For more information about configuring your workflow,
+# read our documentation at https://github.com/codescan-io/codescan-scanner-action
+name: CodeScan
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+    CodeScan:
+        permissions:
+          contents: read # for actions/checkout to fetch code
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout repository
+                uses: actions/checkout@v4
+            -   name: Cache files
+                uses: actions/cache@v3
+                with:
+                    path: |
+                        ~/.sonar
+                    key: ${{ runner.os }}-sonar
+                    restore-keys: ${{ runner.os }}-sonar
+            -   name: Run Analysis
+                uses: codescan-io/codescan-scanner-action@2.0
+                with:
+                    generateSarifFile: false
+                    args: |
+                      sonar.host.url=https://preview.codescan.io/
+                      sonar.projectKey=webhook-project-k
+                      sonar.login=squ_bc7401d09949f3d6cbeb7201d66f195d4b1edd3b
+                      sonar.organization=test-ritesh-org
+                      sonar.branch.name=main
+                      sonar.sources=.
